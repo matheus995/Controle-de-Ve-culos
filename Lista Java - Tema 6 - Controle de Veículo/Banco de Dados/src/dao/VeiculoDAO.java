@@ -79,9 +79,44 @@ public class VeiculoDAO {
 		}
 		return veiculos;
 	}
+	
+	public static ArrayList<Veiculo> consulta() throws SQLException{
+		Connection conn = null;
+		ArrayList <Veiculo> veiculos = new ArrayList<Veiculo>();
+		
+		try {
+			
+			conn = Conexao.getConexao();
+			PreparedStatement smt = conn.prepareStatement("select * from veiculo where numerochassi = ?");
+			ResultSet rs = smt.executeQuery();
+			Veiculo veiculo = null;
+			while(rs.next()){
+				veiculo = new Veiculo();
+				veiculo.setPlaca(rs.getString("placa"));
+				veiculo.setModelo(rs.getString("modelo"));
+				veiculo.setMarca(rs.getString("marca"));
+				veiculo.setAnofabricacao(rs.getInt("anofabricacao"));
+				veiculo.setCor(rs.getString("cor"));
+				veiculo.setNumerochassi(rs.getString("numerochassi"));
+				veiculos.add(veiculo);
+				
+			}
+			
+			rs.close();
+			smt.close();
+			
+		} catch (Exception e) {
+			e.getMessage();
+			
+		}
+		finally {
+			conn.close();
+		}
+		return veiculos;
+	}
 	public void alterar(Veiculo veiculo) throws SQLException{
 		Connection conn = null;
-		String sql = "update veiculo set placa = ?, marca = ?, modelo = ?, anofabricacao = ?, cor = ?, where numerochassi = ?  ";
+		String sql = "update veiculo set placa = ?, marca = ?, modelo = ?, anofabricacao = ?, cor = ? where numerochassi = ?  ";
 		try {
 			conn = Conexao.getConexao();
 			PreparedStatement smt = conn.prepareStatement(sql);
@@ -104,11 +139,12 @@ public class VeiculoDAO {
 	
 	public void remover(Veiculo veiculo) throws SQLException{
 		Connection conn = null;
-		String sql = "";
+		String sql = "delete from veiculo where numerochassi=?";
 		try {
-			PreparedStatement smt = conn.prepareStatement("delete from veiculo where numerochassi = ?");
+			conn = Conexao.getConexao();
+			PreparedStatement smt = conn.prepareStatement(sql);
 			smt.setString(1, veiculo.getNumerochassi());
-			smt.execute();
+			smt.executeUpdate();
 			smt.close();
 		} catch (Exception e) {
 		}
