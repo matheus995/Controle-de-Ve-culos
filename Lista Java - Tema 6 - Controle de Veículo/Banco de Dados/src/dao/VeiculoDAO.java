@@ -1,0 +1,120 @@
+package dao;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+
+import conexao.Conexao;
+import entidade.Veiculo;
+
+public class VeiculoDAO {
+	
+	public static void adicionar(Veiculo veiculo) throws SQLException{
+		Connection conn = null;
+		String sql = "insert into veiculo (placa,marca,modelo,anofabricacao,cor,numerochassi) " + "values(?,?,?,?,?,?)";
+		try {
+			conn = Conexao.getConexao();
+			PreparedStatement smt = conn.prepareStatement(sql); 
+			smt.setString(1, veiculo.getPlaca());
+			smt.setString(2, veiculo.getMarca());
+			smt.setString(3, veiculo.getModelo());
+			smt.setInt(4, veiculo.getAnofabricacao());
+			smt.setString(5, veiculo.getCor());
+			smt.setString(6, veiculo.getNumerochassi());
+			smt.execute();
+			smt.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally{
+			conn.close();
+		}
+	}
+	/*public static void main(String[] args) {
+		try {
+			adicionar(new Contato());
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}*/
+	
+	public static ArrayList<Veiculo> getLista() throws SQLException{
+		Connection conn = null;
+		ArrayList <Veiculo> veiculos = new ArrayList<Veiculo>();
+		
+		try {
+			
+			conn = Conexao.getConexao();
+			PreparedStatement smt = conn.prepareStatement("select * from veiculo");
+			ResultSet rs = smt.executeQuery();
+			Veiculo veiculo = null;
+			while(rs.next()){
+				veiculo = new Veiculo();
+				veiculo.setPlaca(rs.getString("placa"));
+				veiculo.setModelo(rs.getString("modelo"));
+				veiculo.setMarca(rs.getString("marca"));
+				veiculo.setAnofabricacao(rs.getInt("anofabricacao"));
+				veiculo.setCor(rs.getString("cor"));
+				veiculo.setNumerochassi(rs.getString("numerochassi"));
+				veiculos.add(veiculo);
+				
+			}
+			
+			rs.close();
+			smt.close();
+			
+		} catch (Exception e) {
+			e.getMessage();
+			
+		}
+		finally {
+			conn.close();
+		}
+		return veiculos;
+	}
+	public void alterar(Veiculo veiculo) throws SQLException{
+		Connection conn = null;
+		String sql = "update veiculo set placa = ?, marca = ?, modelo = ?, anofabricacao = ?, cor = ?, where numerochassi = ?  ";
+		try {
+			conn = Conexao.getConexao();
+			PreparedStatement smt = conn.prepareStatement(sql);
+			smt.setString(1, veiculo.getPlaca());
+			smt.setString(2, veiculo.getMarca());
+			smt.setString(3, veiculo.getModelo());
+			smt.setInt(4,veiculo.getAnofabricacao());
+			smt.setString(5, veiculo.getCor());
+			smt.setString(6, veiculo.getNumerochassi());
+			
+			smt.execute();
+			smt.close();
+			
+		} catch (Exception e) {
+		}
+		finally {
+			conn.close();
+		}
+	}
+	
+	public void remover(Veiculo veiculo) throws SQLException{
+		Connection conn = null;
+		String sql = "";
+		try {
+			PreparedStatement smt = conn.prepareStatement("delete from veiculo where numerochassi = ?");
+			smt.setString(1, veiculo.getNumerochassi());
+			smt.execute();
+			smt.close();
+		} catch (Exception e) {
+		}
+		finally {
+			conn.close();
+		}
+		
+	}
+}
